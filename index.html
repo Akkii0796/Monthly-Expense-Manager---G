@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Expense Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #eef2ff; /* Light indigo background */
+        }
+        .card {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+        .btn {
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .btn-primary {
+            background-image: linear-gradient(to right, #4f46e5, #6366f1);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(99, 102, 241, 0.4);
+        }
+        .btn-secondary {
+            background-color: #e5e7eb;
+            color: #374151;
+        }
+        .btn-secondary:hover {
+            background-color: #d1d5db;
+        }
+        .input-field {
+             background-color: #f9fafb;
+             border: 1px solid #d1d5db;
+             border-radius: 8px;
+             padding: 10px;
+             width: 100%;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+
+    <!-- App Container -->
+    <div id="app" class="container mx-auto p-4 md:p-6 lg:p-8 max-w-5xl">
+        
+        <!-- Header -->
+        <header class="mb-8 p-6 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl shadow-lg text-white">
+             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                 <div>
+                    <h1 class="text-3xl font-bold">Monthly Expense Tracker</h1>
+                    <p id="monthDisplay" class="opacity-90 mt-1">Tracking expenses for...</p>
+                 </div>
+                 <div class="text-sm mt-4 sm:mt-0 sm:text-right">
+                    <span class="font-semibold">Shareable User ID:</span><br>
+                    <span id="userIdDisplay" class="cursor-pointer font-mono bg-indigo-200 text-indigo-800 py-1 px-2 rounded" title="Click to copy"></span>
+                    <span id="copyFeedback" class="text-green-300 ml-2"></span>
+                </div>
+             </div>
+        </header>
+
+        <main class="space-y-8">
+            <!-- 1. Set Budget -->
+            <div class="card bg-indigo-50">
+                <h2 class="text-xl font-bold mb-4 text-indigo-800">Set Your Monthly Budget</h2>
+                <div class="flex flex-col sm:flex-row items-center gap-4">
+                    <div class="relative flex-grow w-full sm:w-auto">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">₹</span>
+                        <input type="number" id="budgetInput" class="input-field pl-8" placeholder="e.g., 20000">
+                    </div>
+                    <button id="saveBudgetBtn" class="btn btn-primary w-full sm:w-auto">Save Budget</button>
+                </div>
+            </div>
+
+            <!-- 2. Add New Expense -->
+            <div class="card">
+                <h2 class="text-xl font-bold mb-4">Add New Expense</h2>
+                <form id="expenseForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="hidden" id="expenseId">
+                    <div>
+                        <label for="amount" class="block text-sm font-medium text-gray-700 mb-1">Amount (₹)</label>
+                        <input type="number" id="amount" class="input-field" placeholder="e.g., 500" required>
+                    </div>
+                    <div>
+                        <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                        <select id="category" class="input-field">
+                            <option>Grocery</option> <option>Bills</option> <option>Online shopping</option>
+                            <option>Travelling</option> <option>Food</option> <option>Medical expenses</option>
+                            <option>Debt</option> <option>Petrol</option> <option>Home expenses</option>
+                            <option>Maintenance</option> <option>EMI</option> <option>Investment</option>
+                            <option>Entertainment</option> <option>Others</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="vendor" class="block text-sm font-medium text-gray-700 mb-1">Vendor</label>
+                        <input type="text" id="vendor" class="input-field" placeholder="e.g., Amazon, Zomato">
+                    </div>
+                    <div>
+                        <label for="note" class="block text-sm font-medium text-gray-700 mb-1">Note</label>
+                        <input type="text" id="note" class="input-field" placeholder="Optional notes">
+                    </div>
+                    <div class="md:col-span-2 flex justify-end gap-4">
+                        <button type="button" id="cancelUpdateBtn" class="btn btn-secondary hidden">Cancel</button>
+                        <button type="submit" id="addExpenseBtn" class="btn btn-primary">Add Expense</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- 3. Financial Summary -->
+            <div class="card">
+                <h2 class="text-xl font-bold mb-4">Financial Overview</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                    <div class="p-4 bg-blue-100 rounded-lg">
+                        <p class="text-sm text-blue-800 font-medium">Monthly Budget</p>
+                        <p id="budgetDisplay" class="text-2xl font-bold text-blue-600">₹0</p>
+                    </div>
+                     <div id="totalExpensesCard" class="p-4 bg-green-100 rounded-lg">
+                        <p class="text-sm text-green-800 font-medium">Total Expenses</p>
+                        <p id="totalExpensesDisplay" class="text-2xl font-bold text-green-600">₹0</p>
+                    </div>
+                     <div class="p-4 bg-purple-100 rounded-lg">
+                        <p class="text-sm text-purple-800 font-medium">Remaining Balance</p>
+                        <p id="remainingBalanceDisplay" class="text-2xl font-bold text-purple-600">₹0</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 4. Top Summaries -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="card">
+                    <h3 class="text-lg font-bold mb-4">Top 3 Categories</h3>
+                    <div id="categorySummary"></div>
+                </div>
+                <div class="card">
+                    <h3 class="text-lg font-bold mb-4">Top 3 Vendors</h3>
+                    <div id="vendorSummary"></div>
+                </div>
+            </div>
+
+            <!-- 5. Weekly & Monthly -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="card">
+                    <h3 class="text-lg font-bold mb-4">Weekly Spending</h3>
+                    <div id="weeklySummary"></div>
+                </div>
+                 <div class="card">
+                    <h3 class="text-lg font-bold mb-4">Monthly History</h3>
+                    <div id="monthlySummary"></div>
+                </div>
+            </div>
+            
+            <!-- 6. Expense History -->
+            <div class="card">
+                <h3 class="text-lg font-bold mb-4">Expense History</h3>
+                <div class="flex flex-wrap gap-4 items-center justify-between p-4 bg-gray-50 rounded-lg mb-4">
+                     <div>
+                        <label for="monthFilter" class="text-sm font-medium mr-2">View Month:</label>
+                        <select id="monthFilter" class="input-field !w-auto"></select>
+                    </div>
+                     <div class="flex flex-wrap gap-4 items-center">
+                        <label class="text-sm font-medium">Or filter by date:</label>
+                        <input type="date" id="startDateFilter" class="input-field !w-auto">
+                        <input type="date" id="endDateFilter" class="input-field !w-auto">
+                        <button id="resetFilterBtn" class="btn btn-secondary !px-3">Reset</button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-500">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3">Date</th> <th class="px-4 py-3">Category</th>
+                                <th class="px-4 py-3">Vendor</th> <th class="px-4 py-3 text-right">Amount</th>
+                                <th class="px-4 py-3 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenseList"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 7. Export Data -->
+            <div class="card">
+                 <h2 class="text-xl font-bold mb-4">Export Data</h2>
+                 <p class="text-sm text-gray-600 mb-4">Download your expense report for the selected month.</p>
+                 <div class="flex gap-4">
+                    <button id="downloadCsvBtn" class="btn btn-secondary w-full">Download CSV</button>
+                    <button id="downloadPdfBtn" class="btn btn-secondary w-full">Download PDF</button>
+                 </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div id="confirmModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40">
+        <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 card w-11/12 max-w-sm z-50">
+            <h3 class="text-lg font-bold mb-2">Are you sure?</h3>
+            <p id="confirmMessage" class="text-sm text-gray-600 mb-6">This action cannot be undone.</p>
+            <div class="flex justify-end space-x-4">
+                <button id="cancelConfirmBtn" class="btn btn-secondary">Cancel</button>
+                <button id="confirmActionBtn" class="btn bg-red-600 text-white hover:bg-red-700">Delete</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, getDocs, Timestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-expense-tracker';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let app, db, auth, userId = null, currentMonthYear = '', selectedMonthYear = '';
+        let allExpenses = [], filteredExpenses = [];
+        let unsubscribeBudget = () => {}, unsubscribeExpenses = () => {};
+
+        const ui = {
+            monthDisplay: document.getElementById('monthDisplay'),
+            userIdDisplay: document.getElementById('userIdDisplay'), copyFeedback: document.getElementById('copyFeedback'),
+            budgetInput: document.getElementById('budgetInput'), saveBudgetBtn: document.getElementById('saveBudgetBtn'),
+            expenseForm: document.getElementById('expenseForm'), amountInput: document.getElementById('amount'),
+            categoryInput: document.getElementById('category'), vendorInput: document.getElementById('vendor'),
+            noteInput: document.getElementById('note'), expenseIdInput: document.getElementById('expenseId'),
+            addExpenseBtn: document.getElementById('addExpenseBtn'), cancelUpdateBtn: document.getElementById('cancelUpdateBtn'),
+            budgetDisplay: document.getElementById('budgetDisplay'), totalExpensesDisplay: document.getElementById('totalExpensesDisplay'),
+            totalExpensesCard: document.getElementById('totalExpensesCard'), remainingBalanceDisplay: document.getElementById('remainingBalanceDisplay'),
+            categorySummary: document.getElementById('categorySummary'), vendorSummary: document.getElementById('vendorSummary'),
+            weeklySummary: document.getElementById('weeklySummary'), monthlySummary: document.getElementById('monthlySummary'),
+            monthFilter: document.getElementById('monthFilter'), startDateFilter: document.getElementById('startDateFilter'),
+            endDateFilter: document.getElementById('endDateFilter'), resetFilterBtn: document.getElementById('resetFilterBtn'),
+            expenseList: document.getElementById('expenseList'), downloadCsvBtn: document.getElementById('downloadCsvBtn'),
+            downloadPdfBtn: document.getElementById('downloadPdfBtn'), confirmModal: document.getElementById('confirmModal'),
+            confirmMessage: document.getElementById('confirmMessage'), cancelConfirmBtn: document.getElementById('cancelConfirmBtn'),
+            confirmActionBtn: document.getElementById('confirmActionBtn'),
+        };
+        
+        async function initApp() {
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                await setPersistence(auth, browserLocalPersistence);
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        ui.userIdDisplay.textContent = userId;
+                        const now = new Date();
+                        currentMonthYear = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+                        if (!selectedMonthYear) {
+                            selectedMonthYear = currentMonthYear;
+                        }
+                        setupMonthFilter();
+                        updateMonthDisplay();
+                        attachListeners();
+                    } else {
+                        signInAnonymously(auth).catch(e => console.error("Anonymous sign-in failed", e));
+                    }
+                });
+            } catch (error) { console.error("Firebase Init Error:", error); }
+        }
+
+        function attachListeners() {
+            if (!userId) return;
+            unsubscribeBudget();
+            unsubscribeExpenses();
+
+            const budgetRef = doc(db, `artifacts/${appId}/users/${userId}/budgets`, selectedMonthYear);
+            unsubscribeBudget = onSnapshot(budgetRef, (docSnap) => {
+                const budgetData = docSnap.data();
+                const budget = budgetData ? budgetData.amount : 0;
+                if(selectedMonthYear === currentMonthYear && document.activeElement !== ui.budgetInput) {
+                    ui.budgetInput.value = budget > 0 ? budget : '';
+                }
+                updateFinancialSummary(budget, filteredExpenses);
+            });
+
+            const expensesQuery = query(collection(db, `artifacts/${appId}/users/${userId}/expenses`), where('monthYear', '==', selectedMonthYear));
+            unsubscribeExpenses = onSnapshot(expensesQuery, (querySnapshot) => {
+                const expenses = [];
+                querySnapshot.forEach((doc) => expenses.push({ id: doc.id, ...doc.data() }));
+                allExpenses = expenses.sort((a, b) => b.date.seconds - a.date.seconds);
+                applyFiltersAndRender();
+            });
+        }
+        
+        function applyFiltersAndRender() {
+            let tempExpenses = [...allExpenses];
+            const startDate = ui.startDateFilter.valueAsDate;
+            const endDate = ui.endDateFilter.valueAsDate;
+
+            if (startDate && endDate) {
+                const startTimestamp = new Date(startDate.getTime() - (startDate.getTimezoneOffset() * 60000));
+                const endTimestamp = new Date(endDate.getTime() + (86400000 - 1) - (endDate.getTimezoneOffset() * 60000));
+                
+                tempExpenses = tempExpenses.filter(exp => {
+                     const expDate = new Date(exp.date.seconds * 1000);
+                     return expDate >= startTimestamp && expDate <= endTimestamp;
+                });
+            }
+            filteredExpenses = tempExpenses;
+            
+            const budgetRef = doc(db, `artifacts/${appId}/users/${userId}/budgets`, selectedMonthYear);
+            getDoc(budgetRef).then(docSnap => {
+                const budget = docSnap.exists() ? docSnap.data().amount : 0;
+                renderUI(budget, filteredExpenses);
+            });
+        }
+
+        function renderUI(budget, expenses) {
+            updateFinancialSummary(budget, expenses);
+            renderExpenseList(expenses);
+            renderSummaries(budget, expenses);
+        }
+
+        function updateFinancialSummary(budget = 0, expenses = []) {
+            const totalExpenses = expenses.reduce((sum, ex) => sum + ex.amount, 0);
+            const remaining = budget - totalExpenses;
+            ui.budgetDisplay.textContent = `₹${budget.toLocaleString('en-IN')}`;
+            ui.totalExpensesDisplay.textContent = `₹${totalExpenses.toLocaleString('en-IN')}`;
+            ui.remainingBalanceDisplay.textContent = `₹${remaining.toLocaleString('en-IN')}`;
+            
+            ui.totalExpensesCard.className = 'p-4 rounded-lg';
+            const expensePercentage = budget > 0 ? (totalExpenses / budget) * 100 : 0;
+            if (expensePercentage > 90) {
+                ui.totalExpensesCard.classList.add('bg-red-100');
+                ui.totalExpensesDisplay.className = 'text-2xl font-bold text-red-600';
+            } else if (expensePercentage > 50) {
+                ui.totalExpensesCard.classList.add('bg-orange-100');
+                ui.totalExpensesDisplay.className = 'text-2xl font-bold text-orange-600';
+            } else {
+                ui.totalExpensesCard.classList.add('bg-green-100');
+                ui.totalExpensesDisplay.className = 'text-2xl font-bold text-green-600';
+            }
+        }
+        
+        function renderExpenseList(expenses) {
+            ui.expenseList.innerHTML = '';
+            if (expenses.length === 0) {
+                ui.expenseList.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">No expenses match your filters.</td></tr>`;
+                return;
+            }
+            expenses.forEach(exp => {
+                const date = new Date(exp.date.seconds * 1000);
+                const tr = document.createElement('tr');
+                tr.className = 'bg-white border-b hover:bg-gray-50';
+                tr.innerHTML = `
+                    <td class="px-4 py-3">${date.toLocaleDateString('en-GB')} <span class="text-gray-400">${date.toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit'})}</span></td>
+                    <td class="px-4 py-3 font-medium">${exp.category}</td>
+                    <td class="px-4 py-3">${exp.vendor || '-'}</td>
+                    <td class="px-4 py-3 font-semibold text-right">₹${exp.amount.toLocaleString('en-IN')}</td>
+                    <td class="px-4 py-3 text-center">
+                        <button class="text-blue-600 hover:text-blue-800 p-1 modify-btn" data-id="${exp.id}" title="Modify">✏️</button>
+                        <button class="text-red-600 hover:text-red-800 p-1 delete-btn" data-id="${exp.id}" title="Delete">❌</button>
+                    </td>
+                `;
+                ui.expenseList.appendChild(tr);
+            });
+        }
+        
+        function renderSummaries(budget, expenses) {
+            const totalExpenses = expenses.reduce((sum, ex) => sum + ex.amount, 0);
+            renderTopSummary(totalExpenses, expenses, 'category', ui.categorySummary);
+            renderTopSummary(totalExpenses, expenses, 'vendor', ui.vendorSummary);
+            renderWeeklySummary(totalExpenses, expenses);
+            renderMonthlyHistorySummary();
+        }
+        
+        function renderTopSummary(total, expenses, key, element) {
+            const summary = expenses.reduce((acc, curr) => {
+                const itemKey = curr[key] || 'Uncategorized';
+                acc[itemKey] = (acc[itemKey] || 0) + curr.amount;
+                return acc;
+            }, {});
+
+            const sortedSummary = Object.entries(summary).sort(([, a], [, b]) => b - a).slice(0, 3);
+            if (sortedSummary.length === 0) {
+                 element.innerHTML = `<p class="text-center text-gray-500 py-4">Not enough data.</p>`; return;
+            }
+            let html = '<div class="space-y-3">';
+            sortedSummary.forEach(([name, amount]) => {
+                const percentage = total > 0 ? ((amount / total) * 100).toFixed(0) : 0;
+                html += `
+                    <div class="flex justify-between items-center">
+                        <span class="font-medium">${name}</span>
+                        <span class="font-semibold">₹${amount.toLocaleString('en-IN')}</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div class="bg-indigo-600 h-2.5 rounded-full" style="width: ${percentage}%"></div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            element.innerHTML = html;
+        }
+        
+        function renderWeeklySummary(totalExpenses, expenses) {
+            let weeks = Array(4).fill(0).map(() => ({ total: 0 }));
+            expenses.forEach(exp => {
+                const day = new Date(exp.date.seconds * 1000).getDate();
+                if (day <= 7) weeks[0].total += exp.amount;
+                else if (day <= 14) weeks[1].total += exp.amount;
+                else if (day <= 21) weeks[2].total += exp.amount;
+                else weeks[3].total += exp.amount;
+            });
+            
+            ui.weeklySummary.innerHTML = '';
+            const table = document.createElement('table');
+            table.className = 'w-full text-sm';
+            table.innerHTML = `<thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                    <th class="px-2 py-2 text-left">Week</th><th class="px-2 py-2 text-right">Amount</th><th class="px-2 py-2 text-right">% of Total</th>
+                </tr>
+            </thead><tbody></tbody>`;
+            const tbody = table.querySelector('tbody');
+            weeks.forEach((week, i) => {
+                 const percentage = totalExpenses > 0 ? ((week.total / totalExpenses) * 100).toFixed(0) : 0;
+                 tbody.innerHTML += `<tr class="border-b">
+                    <td class="px-2 py-2">Week ${i + 1}</td>
+                    <td class="px-2 py-2 text-right">₹${week.total.toLocaleString('en-IN')}</td>
+                    <td class="px-2 py-2 text-right">${percentage}%</td>
+                 </tr>`;
+            });
+            ui.weeklySummary.appendChild(table);
+        }
+
+        async function renderMonthlyHistorySummary() {
+            const summariesQuery = query(collection(db, `artifacts/${appId}/users/${userId}/expenses`));
+            const querySnapshot = await getDocs(summariesQuery);
+            const monthlyData = {};
+            querySnapshot.forEach(doc => {
+                const expense = doc.data();
+                if (!monthlyData[expense.monthYear]) monthlyData[expense.monthYear] = { total: 0, categories: {} };
+                monthlyData[expense.monthYear].total += expense.amount;
+                monthlyData[expense.monthYear].categories[expense.category] = (monthlyData[expense.monthYear].categories[expense.category] || 0) + expense.amount;
+            });
+            const sortedMonths = Object.keys(monthlyData).sort().reverse();
+
+            ui.monthlySummary.innerHTML = '';
+            const table = document.createElement('table');
+            table.className = 'w-full text-sm';
+            table.innerHTML = `<thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr>
+                <th class="px-2 py-2 text-left">Month</th><th class="px-2 py-2 text-right">Total Spent</th><th class="px-2 py-2 text-left">Top Category</th>
+            </tr></thead><tbody></tbody>`;
+            const tbody = table.querySelector('tbody');
+            sortedMonths.slice(0, 5).forEach(monthKey => {
+                const data = monthlyData[monthKey];
+                const topCategory = Object.keys(data.categories).reduce((a, b) => data.categories[a] > data.categories[b] ? a : b, 'N/A');
+                const date = new Date(monthKey + '-02');
+                tbody.innerHTML += `<tr class="border-b">
+                    <td class="px-2 py-2">${date.toLocaleString('default', { month: 'short', year: 'numeric' })}</td>
+                    <td class="px-2 py-2 text-right">₹${data.total.toLocaleString('en-IN')}</td>
+                    <td class="px-2 py-2">${topCategory}</td></tr>`;
+            });
+            ui.monthlySummary.appendChild(table);
+        }
+        
+        async function saveBudget() {
+            const budgetAmount = parseFloat(ui.budgetInput.value) || 2000;
+            const budgetRef = doc(db, `artifacts/${appId}/users/${userId}/budgets`, currentMonthYear);
+            try { await setDoc(budgetRef, { amount: budgetAmount }); } catch (e) { console.error("Error saving budget:", e); }
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            const expenseData = {
+                amount: parseFloat(ui.amountInput.value), category: ui.categoryInput.value,
+                vendor: ui.vendorInput.value.trim(), note: ui.noteInput.value.trim(),
+            };
+            if (isNaN(expenseData.amount) || expenseData.amount <= 0) return;
+            const expenseId = ui.expenseIdInput.value;
+            if (expenseId) {
+                await updateDoc(doc(db, `artifacts/${appId}/users/${userId}/expenses`, expenseId), expenseData);
+                resetForm();
+            } else {
+                expenseData.date = Timestamp.now();
+                expenseData.monthYear = currentMonthYear;
+                await addDoc(collection(db, `artifacts/${appId}/users/${userId}/expenses`), expenseData);
+                ui.expenseForm.reset();
+            }
+        }
+        function resetForm() {
+            ui.expenseForm.reset();
+            ui.expenseIdInput.value = '';
+            ui.addExpenseBtn.textContent = 'Add Expense';
+            ui.cancelUpdateBtn.classList.add('hidden');
+        }
+
+        function handleModifyClick(id) {
+            const expense = allExpenses.find(exp => exp.id === id);
+            if (!expense) return;
+            ui.expenseIdInput.value = expense.id;
+            ui.amountInput.value = expense.amount;
+            ui.categoryInput.value = expense.category;
+            ui.vendorInput.value = expense.vendor;
+            ui.noteInput.value = expense.note;
+            ui.addExpenseBtn.textContent = 'Update Expense';
+            ui.cancelUpdateBtn.classList.remove('hidden');
+            ui.amountInput.focus();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showConfirmModal(callback) {
+            ui.confirmModal.classList.remove('hidden');
+            ui.confirmActionBtn.onclick = () => { callback(); hideConfirmModal(); };
+            ui.cancelConfirmBtn.onclick = () => hideConfirmModal();
+        }
+        function hideConfirmModal() { ui.confirmModal.classList.add('hidden'); }
+        function handleDeleteClick(id) { showConfirmModal(() => deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/expenses`, id))); }
+        
+        function setupMonthFilter() {
+            ui.monthFilter.innerHTML = '';
+            const months = new Set();
+            const now = new Date();
+            for (let i = 0; i < 12; i++) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                months.add(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
+            }
+            months.forEach(monthKey => {
+                const option = document.createElement('option');
+                option.value = monthKey;
+                option.textContent = new Date(monthKey + '-02').toLocaleString('default', { month: 'long', year: 'numeric' });
+                if (monthKey === selectedMonthYear) option.selected = true;
+                ui.monthFilter.appendChild(option);
+            });
+        }
+        function updateMonthDisplay() {
+            const date = new Date(selectedMonthYear + '-02');
+            ui.monthDisplay.textContent = `Tracking expenses for ${date.toLocaleString('default', { month: 'long', year: 'numeric' })}`;
+        }
+        function handleMonthFilterChange(e) {
+            selectedMonthYear = e.target.value;
+            updateMonthDisplay();
+            attachListeners();
+        }
+        function resetDateFilters() {
+            ui.startDateFilter.value = '';
+            ui.endDateFilter.value = '';
+            applyFiltersAndRender();
+        }
+        
+        function downloadCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,Date,Time,Category,Vendor,Amount,Note\n";
+            filteredExpenses.forEach(exp => {
+                const d = new Date(exp.date.seconds * 1000);
+                csvContent += [d.toLocaleDateString('en-GB'), d.toLocaleTimeString('en-US'), exp.category, `"${exp.vendor||''}"`, exp.amount, `"${exp.note||''}"`].join(',') + "\r\n";
+            });
+            const link = document.createElement("a");
+            link.href = encodeURI(csvContent);
+            link.download = `expenses_${selectedMonthYear}.csv`;
+            link.click();
+        }
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(18); doc.text(`Expense Report - ${selectedMonthYear}`, 14, 22);
+            doc.setFontSize(11); doc.setTextColor(100);
+            doc.text(`Budget: ${ui.budgetDisplay.textContent}`, 14, 32);
+            doc.text(`Total Spent: ${ui.totalExpensesDisplay.textContent}`, 14, 38);
+            doc.text(`Remaining: ${ui.remainingBalanceDisplay.textContent}`, 14, 44);
+            const tableData = filteredExpenses.map(exp => [
+                new Date(exp.date.seconds * 1000).toLocaleDateString('en-GB'),
+                exp.category, exp.vendor || '-', `Rs ${exp.amount.toLocaleString('en-IN')}`
+            ]);
+            doc.autoTable({
+                startY: 50, head: [['Date', 'Category', 'Vendor', 'Amount']], body: tableData,
+                theme: 'striped', headStyles: { fillColor: [79, 70, 229] }
+            });
+            doc.save(`expenses_${selectedMonthYear}.pdf`);
+        }
+        
+        window.addEventListener('load', initApp);
+        ui.saveBudgetBtn.addEventListener('click', saveBudget);
+        ui.expenseForm.addEventListener('submit', handleFormSubmit);
+        ui.cancelUpdateBtn.addEventListener('click', resetForm);
+        ui.monthFilter.addEventListener('change', handleMonthFilterChange);
+        ui.startDateFilter.addEventListener('change', applyFiltersAndRender);
+        ui.endDateFilter.addEventListener('change', applyFiltersAndRender);
+        ui.resetFilterBtn.addEventListener('click', resetDateFilters);
+        ui.expenseList.addEventListener('click', (e) => {
+            if (e.target.closest('.modify-btn')) handleModifyClick(e.target.closest('.modify-btn').dataset.id);
+            if (e.target.closest('.delete-btn')) handleDeleteClick(e.target.closest('.delete-btn').dataset.id);
+        });
+        ui.downloadCsvBtn.addEventListener('click', downloadCSV);
+        ui.downloadPdfBtn.addEventListener('click', downloadPDF);
+        ui.userIdDisplay.addEventListener('click', () => {
+            navigator.clipboard.writeText(userId).then(() => {
+                ui.copyFeedback.textContent = 'Copied!';
+                setTimeout(() => { ui.copyFeedback.textContent = ''; }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>
