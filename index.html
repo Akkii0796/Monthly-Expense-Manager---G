@@ -479,56 +479,6 @@
   }
 }
 
-
-@media (min-width: 768px) {
-  #addExpenseModal {
-    top: 50% !important;
-    left: 50% !important;
-    bottom: auto !important;
-    transform: translate(-50%, -50%) !important;
-    width: 400px !important;
-    border-radius: 12px !important;
-    max-height: 90vh !important;
-  }
-}
-
-
-@media (max-width: 480px) {
-  #addExpenseModal {
-    padding: 14px 16px !important;
-    max-height: 75vh !important;
-  }
-  #addExpenseModal .input-group {
-    margin-bottom: 12px;
-  }
-  #addExpenseModal .btn {
-    font-size: 0.9rem;
-    padding: 10px 14px;
-  }
-}
-
-
-@media (max-width: 480px) {
-  #addExpenseModal {
-    width: 80% !important;
-    max-width: 80% !important;
-    left: 10% !important;
-    right: 10% !important;
-    padding: 16px 14px !important;
-  }
-}
-
-
-@media (max-width: 480px) {
-  #addExpenseModal {
-    width: 80% !important;
-    max-width: 80% !important;
-    left: 10% !important;
-    right: 10% !important;
-    padding: 16px 14px !important;
-  }
-}
-
 </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -612,7 +562,63 @@
 
 
 
-<div class="card full-width" onclick="openExpenseModal()" style="cursor:pointer;text-align:center;"><h2><span class="icon">➕</span> Add Expense</h2></div>
+<div class="card">
+                <h2><span class="icon">➕</span> Add Expense</h2>
+                <div class="input-group">
+                    <label for="category">Category</label>
+                    <select id="category">
+                        <option value="Grocery">Grocery</option>
+                        <option value="Bills">Bills</option>
+                        <option value="Online shopping">Online shopping</option>
+                        <option value="Travelling">Travelling</option>
+                        <option value="Food">Food</option>
+                        <option value="Medical expenses">Medical expenses</option>
+                        <option value="Debt">Debt</option>
+                        <option value="Petrol">Petrol</option>
+                        <option value="Home expenses other than grocery">Home expenses other than grocery</option>
+                        <option value="Maintenance">Maintenance</option>
+                        <option value="EMI">EMI</option>
+                        <option value="Investment">Investment</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Others">Others</option>
+                    </select>
+                </div>
+
+
+
+                <div class="input-group">
+                    <label for="vendor">Vendor</label>
+                    <input type="text" id="vendor" placeholder="Enter vendor name">
+                </div>
+                <div class="input-group">
+                    <label for="amount">Amount (₹)</label>
+                    <input type="number" id="amount" placeholder="Enter amount">
+                </div>
+                <div class="input-group">
+                    <label for="note">Note</label>
+                    <textarea id="note" rows="1" placeholder="Add a note (optional)"></textarea>
+                </div>
+                
+<div class="input-group">
+    <label for="expenseDate">Date</label>
+    <input type="date" id="expenseDate" value="">
+</div>
+
+<div class="input-group">
+    <label>Added By</label>
+    <div style="display:flex;gap:20px;align-items:center;">
+        <label style="display:flex;align-items:center;">
+            <input type="radio" name="addedByRadio" value="Akshay" id="addedByAkshay" checked style="margin-right:6px;">
+            Akshay
+        </label>
+        <label style="display:flex;align-items:center;">
+            <input type="radio" name="addedByRadio" value="Achal" id="addedByAchal" style="margin-right:6px;">
+            Achal
+        </label>
+    </div>
+</div>
+                <button class="btn btn-secondary" id="addExpenseBtn" onclick="addExpense()">Add Expense</button>
+            </div>
 
             <div class="card full-width">
     <h2><span class="icon">📉</span> Daily Expense Trend</h2>
@@ -1663,122 +1669,5 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 </script>
-
-<div id="addExpenseModal" style="display:none;position:fixed;bottom:0;left:0;width:70%;max-width:500px;margin:auto;right:0;background:white;z-index:10001;border-top-left-radius:20px;border-top-right-radius:20px;padding:20px;box-shadow:0 -4px 20px rgba(0,0,0,0.15);overflow-y:auto;">
-  <div style="text-align:center;margin-bottom:10px;">
-    <h3 style="font-size:1.25rem;margin-bottom:6px;">➕ Add Expense</h3>
-    <button class="btn btn-danger btn-sm" onclick="closeExpenseModal()" style="position:absolute;top:10px;right:20px;">✖</button>
-  </div>
-  <div class="input-group">
-    <label for="category">Category</label>
-    <select id="category"></select>
-  </div>
-  <div class="input-group">
-    <label for="expenseDate">Date</label>
-    <input type="date" id="expenseDate">
-  </div>
-  <div class="input-group">
-    <label for="vendor">Vendor</label>
-    <input type="text" id="vendor" placeholder="Enter vendor name">
-  </div>
-  <div class="input-group">
-    <label for="amount">Amount (₹)</label>
-    <input type="number" id="amount" placeholder="Enter amount">
-  </div>
-  <div class="input-group">
-    <label for="note">Note</label>
-    <textarea id="note" rows="1" placeholder="Add a note (optional)"></textarea>
-  </div>
-  <div class="input-group">
-    <label>Added By</label>
-    <div style="display:flex;gap:20px;align-items:center;">
-        <label style="display:flex;align-items:center;">
-            <input type="radio" name="addedByRadio" value="Akshay" id="addedByAkshay" checked style="margin-right:6px;">
-            Akshay
-        </label>
-        <label style="display:flex;align-items:center;">
-            <input type="radio" name="addedByRadio" value="Achal" id="addedByAchal" style="margin-right:6px;">
-            Achal
-        </label>
-    </div>
-  </div>
-  <button class="btn btn-secondary" style="margin-top:10px;" id="addExpenseBtn" onclick="addExpense()">Add Expense</button>
-</div>
-
-
-<div id="addExpenseModal" style="display:none;position:fixed;bottom:0;left:0;width:70%;max-width:500px;margin:auto;right:0;background:white;z-index:10001;border-top-left-radius:20px;border-top-right-radius:20px;padding:20px;box-shadow:0 -4px 20px rgba(0,0,0,0.15);overflow-y:auto;">
-  <div style="text-align:center;margin-bottom:10px;">
-    <h3 style="font-size:1.25rem;margin-bottom:6px;">➕ Add Expense</h3>
-    <button class="btn btn-danger btn-sm" onclick="closeExpenseModal()" style="position:absolute;top:10px;right:20px;">✖</button>
-  </div>
-  <div class="input-group">
-    <label for="category">Category</label>
-    <select id="category"></select>
-  </div>
-  <div class="input-group">
-    <label for="expenseDate">Date</label>
-    <input type="date" id="expenseDate">
-  </div>
-  <div class="input-group">
-    <label for="vendor">Vendor</label>
-    <input type="text" id="vendor" placeholder="Enter vendor name">
-  </div>
-  <div class="input-group">
-    <label for="amount">Amount (₹)</label>
-    <input type="number" id="amount" placeholder="Enter amount">
-  </div>
-  <div class="input-group">
-    <label for="note">Note</label>
-    <textarea id="note" rows="1" placeholder="Add a note (optional)"></textarea>
-  </div>
-  <div class="input-group">
-    <label>Added By</label>
-    <div style="display:flex;gap:20px;align-items:center;">
-        <label style="display:flex;align-items:center;">
-            <input type="radio" name="addedByRadio" value="Akshay" id="addedByAkshay" checked style="margin-right:6px;">
-            Akshay
-        </label>
-        <label style="display:flex;align-items:center;">
-            <input type="radio" name="addedByRadio" value="Achal" id="addedByAchal" style="margin-right:6px;">
-            Achal
-        </label>
-    </div>
-  </div>
-  <button class="btn btn-secondary" style="margin-top:10px;" id="addExpenseBtn" onclick="addExpense()">Add Expense</button>
-</div>
-
-
-<script>
-function openExpenseModal() {
-  const modal = document.getElementById('addExpenseModal');
-  if (modal) {
-    modal.style.display = 'block';
-    document.getElementById('vendor')?.focus();
-  }
-}
-function closeExpenseModal() {
-  const modal = document.getElementById('addExpenseModal');
-  if (modal) {
-    modal.style.display = 'none';
-  }
-}
-</script>
-
-
-<div id="budgetModal" style="display:none;position:fixed;bottom:0;left:0;width:100vw;max-height:75vh;background:white;z-index:10002;border-top-left-radius:20px;border-top-right-radius:20px;padding:20px;box-shadow:0 -4px 20px rgba(0,0,0,0.15);overflow-y:auto;">
-  <div style="text-align:center;margin-bottom:10px;">
-    <h3 style="font-size:1.25rem;margin-bottom:6px;">🎯 Set Monthly Budget</h3>
-    <button class="btn btn-danger btn-sm" onclick="closeBudgetModal()" style="position:absolute;top:10px;right:20px;">✖</button>
-  </div>
-  <div class="input-group">
-    <label for="budgetAmount">Budget Amount (₹)</label>
-    <input type="number" id="budgetAmount" placeholder="Enter your monthly budget">
-  </div>
-  <div style="display:flex;gap:10px;align-items:stretch;margin-bottom:10px;">
-    <button class="btn" style="flex:1;" onclick="setBudget(event)">Set Budget</button>
-    <button class="btn btn-danger" style="flex:1;" onclick="resetBudget()">Reset Budget</button>
-  </div>
-</div>
-
 </body>
 </html>
