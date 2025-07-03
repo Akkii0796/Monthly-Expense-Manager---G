@@ -575,7 +575,7 @@
 
 
 
-<div class="card full-width" style="cursor:pointer;text-align:center;" onclick="openExpenseModal()"><h2><span class="icon">➕</span> Add Expense</h2></div>
+<div class="card full-width" onclick="openExpenseModal()" style="cursor:pointer;text-align:center;"><h2><span class="icon">➕</span> Add Expense</h2></div>
 
             <div class="card full-width">
     <h2><span class="icon">📉</span> Daily Expense Trend</h2>
@@ -1709,6 +1709,23 @@ document.addEventListener('DOMContentLoaded', () => {
   </div>
   <button class="btn btn-secondary" style="margin-top:10px;" id="addExpenseBtn" onclick="addExpense()">Add Expense</button>
 </div>
+
+
+<script>
+function openExpenseModal() {
+  const modal = document.getElementById('addExpenseModal');
+  if (modal) {
+    modal.style.display = 'block';
+    document.getElementById('vendor')?.focus();
+  }
+}
+function closeExpenseModal() {
+  const modal = document.getElementById('addExpenseModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+</script>
 
 </body>
 </html>
