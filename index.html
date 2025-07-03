@@ -511,7 +511,7 @@
 </div>
 <h1 id="headerTitle">💰 Expense Tracker</h1>
 </div>
-<div class="main-content"><button onclick="const budgetSection=document.getElementById('budgetSection');budgetSection.style.display = (budgetSection.style.display === 'none') ? 'block' : 'none';" style="background: linear-gradient(135deg, #10b981, #059669);color: white; border: none; padding: 10px 20px;border-radius: 10px; font-size: 1rem; font-weight: 600;cursor: pointer; margin-bottom: 10px; display: block;">💰 Set Monthly Budget</button><div id="budgetSection" style="display: none;"><div class="card">
+<div class="main-content"><div style="display: flex; gap: 10px; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap;"><button onclick="const budgetSection=document.getElementById('budgetSection');budgetSection.style.display = (budgetSection.style.display === 'none') ? 'block' : 'none';" style="flex: 1; min-width: 150px; background: linear-gradient(135deg, #10b981, #059669);color: white; border: none; padding: 10px 20px; border-radius: 10px;font-size: 1rem; font-weight: 600; cursor: pointer;">💰 Set Monthly Budget</button><button onclick="const addExpSection=document.getElementById('addExpenseSection');addExpSection.style.display = (addExpSection.style.display === 'none') ? 'block' : 'none';" style="flex: 1; min-width: 150px; background: linear-gradient(135deg, #ef4444, #dc2626);color: white; border: none; padding: 10px 20px; border-radius: 10px;font-size: 1rem; font-weight: 600; cursor: pointer;">➕ Add Expense</button></div><div id="budgetSection" style="display: none;"><div class="card">
 <h2><span class="icon">🎯</span> Set Monthly Budget</h2>
 <div class="input-group">
 <label for="budgetAmount">Budget Amount (₹)</label>
@@ -521,7 +521,7 @@
 <button class="btn" onclick="setBudget(event)" style="flex:1;min-width:100px;height:38px;font-size:0.85rem;line-height:1;">Set Budget</button>
 <button class="btn btn-danger" onclick="resetBudget()" style="flex:1;min-width:100px;height:38px;font-size:0.85rem;line-height:1;">Reset Budget</button>
 </div>
-</div></div><button onclick="const addExpSection=document.getElementById('addExpenseSection');addExpSection.style.display = (addExpSection.style.display === 'none') ? 'block' : 'none';" style="background: linear-gradient(135deg, #10b981, #059669);color: white; border: none; padding: 10px 20px;border-radius: 10px; font-size: 1rem; font-weight: 600;cursor: pointer; margin-bottom: 10px; display: block;">➕ Add Expense</button><div id="addExpenseSection" style="display: none;"><div class="card">
+</div></div><div id="addExpenseSection" style="display: none;"><div class="card">
 <h2><span class="icon">➕</span> Add Expense</h2>
 <div class="input-group">
 <label for="category">Category</label>
@@ -571,7 +571,7 @@
         </label>
 </div>
 </div>
-<button class="btn btn-secondary" id="addExpenseBtn" onclick="addExpense()">Add Expense</button>
+<button class="btn btn-secondary" id="addExpenseBtn" onclick="addExpense()" style="background: linear-gradient(135deg, #ef4444, #dc2626);color: white; border: none; padding: 10px 20px;border-radius: 10px; font-size: 1rem; font-weight: 600;cursor: pointer; margin-bottom: 10px; display: block;">Add Expense</button>
 </div></div>
 <div id="budgetIndicatorWrapper" style="margin-top:4px;">
 <div style="display:flex;align-items:center;gap:10px;">
@@ -597,7 +597,6 @@
 </div>
 </div>
 </div>
-
 <div class="card full-width">
 <h2><span class="icon">📉</span> Daily Expense Trend</h2>
 <canvas id="dailyExpenseChart" style="width:100%;max-height:180px;"></canvas>
