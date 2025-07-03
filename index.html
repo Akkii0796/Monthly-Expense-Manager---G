@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expense Tracker</title>
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Expense Tracker</title>
+<style>
         * {
             margin: 0;
             padding: 0;
@@ -13,7 +14,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
             min-height: 100vh;
             color: #333;
         }
@@ -36,7 +37,7 @@
         }
 
         .pin-card {
-            background: rgba(255, 255, 255, 0.95);
+            background: #fdfdfd;
             backdrop-filter: blur(20px);
             border-radius: 20px;
             padding: 40px;
@@ -57,7 +58,7 @@
         }
 
         .pin-btn {
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #ff6a00, #ee0979);
             color: white;
             border: none;
             padding: 15px 30px;
@@ -83,7 +84,7 @@
         }
 
         .header {
-            background: rgba(255, 255, 255, 0.95);
+            background: #fdfdfd;
             backdrop-filter: blur(20px);
             border-radius: 20px;
             padding: 20px;
@@ -106,7 +107,7 @@
 
         .tabs {
             display: flex;
-            background: rgba(255, 255, 255, 0.95);
+            background: #fdfdfd;
             backdrop-filter: blur(20px);
             border-radius: 20px;
             padding: 10px;
@@ -127,7 +128,7 @@
         }
 
         .tab-btn.active {
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #ff6a00, #ee0979);
             color: white;
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
@@ -141,7 +142,7 @@
         }
 
         .card {
-            background: rgba(255, 255, 255, 0.95);
+            background: #fdfdfd;
             backdrop-filter: blur(20px);
             border-radius: 20px;
             padding: 25px;
@@ -158,13 +159,13 @@
         }
 
         .summary-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
             color: white;
             padding: 20px;
             border-radius: 15px;
             text-align: center;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-        }
+         background: #ffffff; color: #333; border: 2px solid #0072ff;}
 
         .summary-card h3 {
             font-size: 14px;
@@ -244,7 +245,7 @@
         }
 
         .btn {
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #ff6a00, #ee0979);
             color: white;
             border: none;
             padding: 15px 25px;
@@ -422,207 +423,232 @@
             border-radius: 10px;
             margin-bottom: 20px;
         }
+    
+    .form-group.buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .form-group.buttons .btn {
+        flex: 1;
+        min-width: 150px;
+    }
+    
+    .recent-expenses {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-height: 250px;
+        overflow-y: auto;
+    }
+
+    .recent-expense-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 12px;
+        background: #ffffffcc;
+        border-left: 4px solid #0072ff;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+
+    .recent-expense-meta {
+        color: #666;
+        font-size: 12px;
+    }
+    
+    .form-grid .form-group.buttons {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+    }
+    .form-grid .form-group.buttons .btn {
+        flex: 1;
+        min-width: 100px;
+    }
     </style>
 </head>
 <body>
-    <!-- PIN Lock Screen -->
-    <div id="pinScreen" class="pin-screen">
-        <div class="pin-card">
-            <h2>🔒 Enter PIN</h2>
-            <input type="password" id="pinInput" class="pin-input" placeholder="****" maxlength="4">
-            <br>
-            <button onclick="validatePIN()" class="pin-btn">Unlock</button>
-            <div id="pinError" class="pin-error"></div>
-        </div>
-    </div>
-
-    <!-- Main App -->
-    <div id="mainApp" class="app">
-        <div class="container">
-            <!-- Header -->
-            <div class="header">
-                <h1>💰 Expense Tracker</h1>
-                <div>
-                    <span id="currentMonth"></span>
-                    <select id="monthSelector" class="month-selector">
-                        <!-- Options will be populated by JavaScript -->
-                    </select>
-                </div>
-            </div>
-
-            <!-- Tabs -->
-            <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('dashboard')">📊 Dashboard</button>
-                <button class="tab-btn" onclick="switchTab('analytics')">📈 Analytics</button>
-                <button class="tab-btn" onclick="switchTab('history')">📋 History</button>
-            </div>
-
-            <!-- Dashboard Tab -->
-            <div id="dashboard" class="tab-content active">
-                <!-- Budget Section -->
-                <div class="card">
-                    <h3>Monthly Budget</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <input type="number" id="budgetInput" placeholder="Enter budget amount" step="0.01">
-                        </div>
-                        <div class="form-group">
-                            <button onclick="setBudget()" class="btn">Set Budget</button>
-                            <button onclick="resetBudget()" class="btn btn-secondary">Reset</button>
-                            <button onclick="copyLastMonthBudget()" class="btn btn-secondary">Copy Last Month</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Summary Cards -->
-                <div class="summary-cards">
-                    <div class="summary-card">
-                        <h3>Budget</h3>
-                        <div class="amount" id="budgetAmount">₹0</div>
-                    </div>
-                    <div class="summary-card">
-                        <h3>Spent</h3>
-                        <div class="amount" id="spentAmount">₹0</div>
-                    </div>
-                    <div class="summary-card">
-                        <h3>Remaining</h3>
-                        <div class="amount" id="remainingAmount">₹0</div>
-                    </div>
-                </div>
-
-                <!-- Progress Bar -->
-                <div class="card">
-                    <h3>Budget Progress</h3>
-                    <div class="progress-bar">
-                        <div id="progressFill" class="progress-fill" style="width: 0%; background: #2ed573;"></div>
-                    </div>
-                    <div id="progressText" style="text-align: center; margin-top: 10px;">0% used</div>
-                </div>
-
-                <!-- Add Expense Form -->
-                <div class="card">
-                    <h3>Add Expense</h3>
-                    <form id="expenseForm">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Category</label>
-                                <select id="categorySelect">
-                                    <option value="">Select Category</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Vendor</label>
-                                <input type="text" id="vendorInput" placeholder="Enter vendor name">
-                            </div>
-                            <div class="form-group">
-                                <label>Amount</label>
-                                <input type="number" id="amountInput" placeholder="Enter amount" step="0.01" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Note</label>
-                                <textarea id="noteInput" placeholder="Optional note" rows="2"></textarea>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Added By</label>
-                            <div class="radio-group">
-                                <label><input type="radio" name="addedBy" value="Akshay" checked> Akshay</label>
-                                <label><input type="radio" name="addedBy" value="Achal"> Achal</label>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn">Add Expense</button>
-                        <button type="button" onclick="addCustomCategory()" class="btn btn-secondary">Add Custom Category</button>
-                    </form>
-                </div>
-
-                <!-- Daily Chart -->
-                <div class="chart-container">
-                    <div class="chart-title">Daily Expenses</div>
-                    <canvas id="dailyChart" width="400" height="200"></canvas>
-                </div>
-            </div>
-
-            <!-- Analytics Tab -->
-            <div id="analytics" class="tab-content">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <h3>Top Categories</h3>
-                        <div id="topCategories"></div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Top Vendors</h3>
-                        <div id="topVendors"></div>
-                    </div>
-                </div>
-
-                <div class="chart-container">
-                    <div class="chart-title">Weekly Expenses</div>
-                    <canvas id="weeklyChart" width="400" height="200"></canvas>
-                </div>
-
-                <div class="chart-container">
-                    <div class="chart-title">Monthly Comparison</div>
-                    <canvas id="monthlyChart" width="400" height="200"></canvas>
-                </div>
-
-                <div class="chart-container">
-                    <div class="chart-title">Person-wise Expenses</div>
-                    <canvas id="personChart" width="400" height="200"></canvas>
-                </div>
-            </div>
-
-            <!-- History Tab -->
-            <div id="history" class="tab-content">
-                <!-- Filters -->
-                <div class="card">
-                    <h3>Filters</h3>
-                    <div class="filter-section">
-                        <div class="form-group">
-                            <label>Search</label>
-                            <input type="text" id="searchInput" placeholder="Search expenses...">
-                        </div>
-                        <div class="form-group">
-                            <label>From Date</label>
-                            <input type="date" id="fromDate">
-                        </div>
-                        <div class="form-group">
-                            <label>To Date</label>
-                            <input type="date" id="toDate">
-                        </div>
-                    </div>
-                    <button onclick="applyFilters()" class="btn">Apply Filters</button>
-                    <button onclick="clearFilters()" class="btn btn-secondary">Clear</button>
-                </div>
-
-                <!-- Export Buttons -->
-                <div class="card">
-                    <h3>Export Data</h3>
-                    <button onclick="exportCSV()" class="btn">📄 Export CSV</button>
-                    <button onclick="exportPDF()" class="btn">📋 Export PDF</button>
-                </div>
-
-                <!-- Expense List -->
-                <div class="card">
-                    <h3>Recent Expenses</h3>
-                    <div id="expenseList" class="expense-list"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Firebase CDN -->
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
-    
-    <!-- Chart.js CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
-    
-    <!-- jsPDF for PDF export -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-
-    <script>
+<!-- PIN Lock Screen -->
+<div class="pin-screen" id="pinScreen">
+<div class="pin-card">
+<h2>🔒 Enter PIN</h2>
+<input class="pin-input" id="pinInput" maxlength="4" placeholder="****" type="password"/>
+<br/>
+<button class="pin-btn" onclick="validatePIN()">Unlock</button>
+<div class="pin-error" id="pinError"></div>
+</div>
+</div>
+<!-- Main App -->
+<div class="app" id="mainApp">
+<div class="container">
+<!-- Header -->
+<div class="header">
+<h1>💰 Expense Tracker</h1>
+<div>
+<span id="currentMonth"></span>
+<select class="month-selector" id="monthSelector">
+<!-- Options will be populated by JavaScript -->
+</select>
+</div>
+</div>
+<!-- Tabs -->
+<div class="tabs">
+<button class="tab-btn active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+<button class="tab-btn" onclick="switchTab('analytics')">📈 Analytics</button>
+<button class="tab-btn" onclick="switchTab('history')">📋 History</button>
+</div>
+<!-- Dashboard Tab -->
+<div class="tab-content active" id="dashboard">
+<!-- Budget Section -->
+<div class="card">
+<h3>Monthly Budget</h3>
+<div class="form-grid">
+<div class="form-group">
+<input id="budgetInput" placeholder="Enter budget amount" step="0.01" type="number"/>
+</div>
+<div class="form-group buttons buttons">
+<button class="btn" onclick="setBudget()">Set Budget</button>
+<button class="btn btn-secondary" onclick="resetBudget()">Reset</button>
+<button class="btn btn-secondary" onclick="copyLastMonthBudget()">Copy Last Month</button>
+</div>
+</div>
+</div>
+<!-- Summary Cards -->
+<div class="summary-cards">
+<div class="summary-card">
+<h3>Budget</h3>
+<div class="amount" id="budgetAmount">₹0</div>
+</div>
+<div class="summary-card">
+<h3>Spent</h3>
+<div class="amount" id="spentAmount">₹0</div>
+</div>
+<div class="summary-card">
+<h3>Remaining</h3>
+<div class="amount" id="remainingAmount">₹0</div>
+</div>
+</div>
+<!-- Progress Bar -->
+<div class="card">
+<h3>Budget Progress</h3>
+<div class="progress-bar">
+<div class="progress-fill" id="progressFill" style="width: 0%; background: #2ed573;"></div>
+</div>
+<div id="progressText" style="text-align: center; margin-top: 10px;">0% used</div>
+</div>
+<!-- Add Expense Form -->
+<div class="card">
+<h3>Add Expense</h3>
+<form id="expenseForm">
+<div class="form-grid">
+<div class="form-group">
+<label>Category</label>
+<select id="categorySelect">
+<option value="">Select Category</option>
+</select>
+</div>
+<div class="form-group">
+<label>Vendor</label>
+<input id="vendorInput" placeholder="Enter vendor name" type="text"/>
+</div>
+<div class="form-group">
+<label>Amount</label>
+<input id="amountInput" placeholder="Enter amount" required="" step="0.01" type="number"/>
+</div>
+<div class="form-group">
+<label>Note</label>
+<textarea id="noteInput" placeholder="Optional note" rows="2"></textarea>
+</div>
+</div>
+<div class="form-group">
+<label>Added By</label>
+<div class="radio-group">
+<label><input checked="" name="addedBy" type="radio" value="Akshay"/> Akshay</label>
+<label><input name="addedBy" type="radio" value="Achal"/> Achal</label>
+</div>
+</div>
+<button class="btn" type="submit">Add Expense</button>
+<button class="btn btn-secondary" onclick="addCustomCategory()" type="button">Add Custom Category</button>
+</form>
+</div>
+<!-- Daily Chart -->
+<div class="chart-container">
+<div class="chart-title">Daily Expenses</div>
+<canvas height="200" id="dailyChart" width="400"></canvas>
+</div>
+<div class="card"><h3>Recent Expenses</h3><div class="recent-expenses" id="recentExpenses"></div></div></div>
+<!-- Analytics Tab -->
+<div class="tab-content" id="analytics">
+<div class="stats-grid">
+<div class="stat-card">
+<h3>Top Categories</h3>
+<div id="topCategories"></div>
+</div>
+<div class="stat-card">
+<h3>Top Vendors</h3>
+<div id="topVendors"></div>
+</div>
+</div>
+<div class="chart-container">
+<div class="chart-title">Weekly Expenses</div>
+<canvas height="200" id="weeklyChart" width="400"></canvas>
+</div>
+<div class="chart-container">
+<div class="chart-title">Monthly Comparison</div>
+<canvas height="200" id="monthlyChart" width="400"></canvas>
+</div>
+<div class="chart-container">
+<div class="chart-title">Person-wise Expenses</div>
+<canvas height="200" id="personChart" width="400"></canvas>
+</div>
+</div>
+<!-- History Tab -->
+<div class="tab-content" id="history">
+<!-- Filters -->
+<div class="card">
+<h3>Filters</h3>
+<div class="filter-section">
+<div class="form-group">
+<label>Search</label>
+<input id="searchInput" placeholder="Search expenses..." type="text"/>
+</div>
+<div class="form-group">
+<label>From Date</label>
+<input id="fromDate" type="date"/>
+</div>
+<div class="form-group">
+<label>To Date</label>
+<input id="toDate" type="date"/>
+</div>
+</div>
+<button class="btn" onclick="applyFilters()">Apply Filters</button>
+<button class="btn btn-secondary" onclick="clearFilters()">Clear</button>
+</div>
+<!-- Export Buttons -->
+<div class="card">
+<h3>Export Data</h3>
+<button class="btn" onclick="exportCSV()">📄 Export CSV</button>
+<button class="btn" onclick="exportPDF()">📋 Export PDF</button>
+</div>
+<!-- Expense List -->
+<div class="card">
+<h3>Recent Expenses</h3>
+<div class="expense-list" id="expenseList"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Firebase CDN -->
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+<!-- Chart.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+<!-- jsPDF for PDF export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+<script>
         // Firebase Configuration - Replace with your Firebase config
         const firebaseConfig = {
             apiKey: "your-api-key",
@@ -782,6 +808,7 @@
                     loadCategories()
                 ]);
                 updateDashboard();
+updateRecentExpenses();
                 updateCharts();
             } catch (error) {
                 console.error('Error loading data:', error);
@@ -846,6 +873,7 @@
                 budget = amount;
                 budgetInput.value = '';
                 updateDashboard();
+updateRecentExpenses();
                 showSuccess('Budget set successfully!');
             } catch (error) {
                 console.error('Error setting budget:', error);
@@ -860,6 +888,7 @@
                     await database.ref(`budget/${currentMonth}`).remove();
                     budget = 0;
                     updateDashboard();
+updateRecentExpenses();
                     showSuccess('Budget reset successfully!');
                 } catch (error) {
                     console.error('Error resetting budget:', error);
@@ -882,6 +911,7 @@
                     await database.ref(`budget/${currentMonth}`).set(lastBudget);
                     budget = lastBudget;
                     updateDashboard();
+updateRecentExpenses();
                     showSuccess('Budget copied from last month!');
                 } else {
                     showError('No budget found for last month');
@@ -927,6 +957,7 @@
                 // Reload data
                 await loadExpenses();
                 updateDashboard();
+updateRecentExpenses();
                 updateCharts();
                 showSuccess('Expense added successfully!');
                 
@@ -1386,6 +1417,7 @@
                     await database.ref(`expenses/${currentMonth}/${expenseId}/amount`).set(parseFloat(newAmount));
                     await loadExpenses();
                     updateDashboard();
+updateRecentExpenses();
                     updateCharts();
                     loadHistory();
                     showSuccess('Expense updated successfully!');
@@ -1403,6 +1435,7 @@
                     await database.ref(`expenses/${currentMonth}/${expenseId}`).remove();
                     await loadExpenses();
                     updateDashboard();
+updateRecentExpenses();
                     updateCharts();
                     loadHistory();
                     showSuccess('Expense deleted successfully!');
@@ -1511,6 +1544,30 @@
                 document.body.removeChild(successDiv);
             }, 3000);
         }
+    
+    // Update recent expenses
+    function updateRecentExpenses() {
+        const container = document.getElementById('recentExpenses');
+        if (!container || expenses.length === 0) return;
+
+        const recent = [...expenses]
+            .sort((a, b) => b.timestamp - a.timestamp)
+            .slice(0, 5);
+
+        container.innerHTML = '';
+        recent.forEach(exp => {
+            const item = document.createElement('div');
+            item.className = 'recent-expense-item';
+            item.innerHTML = `
+                <div>
+                    <strong>${exp.vendor}</strong> - ${exp.category}
+                    <div class="recent-expense-meta">${exp.date} by ${exp.addedBy}</div>
+                </div>
+                <div><strong>₹${exp.amount.toFixed(2)}</strong></div>
+            `;
+            container.appendChild(item);
+        });
+    }
     </script>
 </body>
 </html>
